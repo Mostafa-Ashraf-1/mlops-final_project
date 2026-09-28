@@ -8,7 +8,11 @@ wheels/
 
 # Virtual environments
 .venv
-
+.env
 # Data
 Data/oxford-iiit-pet
 /Data
+
+# Artifacts
+/mlartifacts
+mlflow.db
