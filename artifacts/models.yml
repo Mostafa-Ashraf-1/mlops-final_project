@@ -1,0 +1,18 @@
+models:
+  ResNet-18:
+    params:
+      lr : 0.0001
+      epochs: 30
+      weight_decay: 0.0001
+
+  ResNet-50:
+    params:
+      lr: 0.0001
+      epochs: 30
+      weight_decay: 0.0001
+
+  MobileNetV3-Small:
+    params:
+      lr: 0.0001
+      epochs: 30
+      weight_decay: 0.0001
