@@ -16,3 +16,6 @@ Data/oxford-iiit-pet
 # Artifacts
 /mlartifacts
 mlflow.db
+.dvc
+artifacts/model.onnx
+artifacts/model.pth
