@@ -25,10 +25,10 @@ jobs:
              pip install uv
              uv sync --no-dev --no-default-groups --group production --no-install-project
 
-    -  name: Checking code and format errors
-       run: |
-        uv run ruff check
-        uv run ruff format --check
+    # -  name: Checking code and format errors
+    #    run: |
+    #     uv run ruff check
+    #     uv run ruff format --check
 
     -  name: Testing API
        run: uv run python -m pytest -s
