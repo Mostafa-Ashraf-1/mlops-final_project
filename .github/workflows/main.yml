@@ -1,0 +1,36 @@
+
+on:
+  pull_request:
+    branches: [main]
+
+  push:
+    branches: ['**']
+jobs:
+  TEST_API:
+    runs-on: ubuntu-latest
+    steps:
+    -  name:  Checkout repository
+       uses:  actions/checkout@v7
+       
+    -  name:  Setup python
+       uses:  actions/setup-python@v7
+       
+       with:
+         python-version:  '3.12'
+
+    -  name: Install dependencies
+       run:  |
+             sudo apt update
+             pip install --upgrade pip
+             pip install uv
+             uv sync --no-dev --no-default-groups --group production --no-install-project
+
+    # -  name: Checking code and format errors
+    #    run: |
+    #     uv run ruff check
+    #     uv run ruff format --check
+
+    -  name: Testing API
+       run: uv run python -m pytest -s
+             
+       
