@@ -5,10 +5,9 @@ from pathlib import Path
 
 import numpy as np
 import onnxruntime as ort
-from PIL import Image, UnidentifiedImageError
 from fastapi import FastAPI, File, HTTPException, UploadFile
+from PIL import Image, UnidentifiedImageError
 from pydantic import BaseModel
-
 
 # --------------------------------------------------
 # Configuration
@@ -78,12 +77,11 @@ CLASS_NAMES = [
     for index in range(len(indexed_classes))
 ]
 
-if isinstance(output_meta.shape[-1], int):
-    if output_meta.shape[-1] != len(CLASS_NAMES):
-        raise ValueError(
-            f"Model outputs {output_meta.shape[-1]} classes, "
-            f"but classes.json contains {len(CLASS_NAMES)}."
-        )
+if isinstance(output_meta.shape[-1], int) and output_meta.shape[-1] != len(CLASS_NAMES):
+    raise ValueError(
+        f"Model outputs {output_meta.shape[-1]} classes, "
+        f"but classes.json contains {len(CLASS_NAMES)}."
+    )
 
 
 def normalize_breed_name(name: str) -> str:

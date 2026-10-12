@@ -1,10 +1,8 @@
 
 import json
-from pathlib import Path
 
 import numpy as np
 import onnxruntime as ort
-import pytest
 from PIL import Image
 
 from src.final_project.app import (
@@ -12,9 +10,9 @@ from src.final_project.app import (
     BREED_TO_SPECIES,
     CLASS_NAMES,
     MODEL_PATH,
+    get_species,
     model,
     preprocess_image,
-    get_species,
 )
 
 
@@ -120,7 +118,7 @@ def test_inference_produces_valid_top_three():
 
     assert len(top_indices) == 3
     assert len(set(top_indices.tolist())) == 3
-    assert np.all((probabilities[top_indices] >= 0))
-    assert np.all((probabilities[top_indices] <= 1))
+    assert np.all(probabilities[top_indices] >= 0)
+    assert np.all(probabilities[top_indices] <= 1)
     assert probabilities[top_indices[0]] >= probabilities[top_indices[1]]
     assert probabilities[top_indices[1]] >= probabilities[top_indices[2]]

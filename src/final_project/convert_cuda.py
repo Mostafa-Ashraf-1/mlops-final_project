@@ -1,5 +1,6 @@
 import torch
 
+
 def get_default_device():
     if torch.cuda.is_available():
         return torch.device('cuda')
@@ -13,7 +14,7 @@ def to_device(data, device):
         return [to_device(x, device) for x in data]
     return data.to(device, non_blocking=(device.type == 'cuda'))
 
-class DeviceDataLoader():
+class DeviceDataLoader:
 
     def __init__(self, dl, device):
         self.dl = dl

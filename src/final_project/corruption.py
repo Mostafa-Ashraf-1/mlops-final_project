@@ -1,12 +1,11 @@
 
-from pathlib import Path
 import shutil
+from pathlib import Path
 
 import cv2
 import numpy as np
 from PIL import Image, ImageEnhance
 from sklearn.model_selection import train_test_split
-
 
 BASE_PATH = Path(__file__).resolve().parent.parent.parent
 ARTIFACTS_PATH = BASE_PATH / "artifacts"

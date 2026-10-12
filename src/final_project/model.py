@@ -1,9 +1,11 @@
-import torch
-from torch import nn
-from src.final_project.DL_Classes import ImageClassificationBase
 import mlflow
+import torch
 import torch.nn.functional as F
+from torch import nn
 from torchvision import models
+
+from src.final_project.dl_classes import ImageClassificationBase
+
 
 @torch.no_grad()
 def evaluate(model, val_loader, n_bins=15, threshold=0.8):
