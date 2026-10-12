@@ -1,9 +1,9 @@
-from typing import Callable, Optional
-
-from torch.utils.data import Dataset
-from PIL import Image
 import os
-import torchvision.transforms as T
+from collections.abc import Callable
+
+from PIL import Image
+from torch.utils.data import Dataset
+
 
 def open_image(path:str)->Image:
 
@@ -20,7 +20,7 @@ class PetsDataset(Dataset):
         super().__init__()
         self.root = root
         self.files = [fname for fname in os.listdir(root) if fname.endswith('.jpg')]
-        self.classes = sorted(list({parse_breed(fname) for fname in self.files}))
+        self.classes = sorted({parse_breed(fname) for fname in self.files})
         self.class_to_idx = {
         cls_name: idx for idx, cls_name in enumerate(self.classes)
         }

@@ -7,13 +7,14 @@ import torch
 import torchvision.transforms as T
 import yaml
 from dotenv import load_dotenv
-from src.final_project import convertCuda
-from src.final_project.convertCuda import DeviceDataLoader
-from src.final_project.model import PetsModel, fit
-from src.final_project.Preprocessing import PetsDataset
+from mlflow.models import infer_signature
 from torch.utils.data import DataLoader, random_split
 from torchvision import models
-from mlflow.models import infer_signature
+
+from src.final_project import convert_cuda
+from src.final_project.convert_cuda import DeviceDataLoader
+from src.final_project.model import PetsModel, fit
+from src.final_project.preprocessing import PetsDataset
 
 load_dotenv()
 MLFLOW_URI = os.getenv("MLFLOW_URI")
@@ -60,7 +61,7 @@ train_ds, valid_ds = random_split(dataset, [train_size, val_size])
 train_dl = DataLoader(train_ds, BATCH_SIZE, shuffle=True, num_workers=0, pin_memory=True)
 valid_dl = DataLoader(valid_ds, BATCH_SIZE * 2, num_workers=0, pin_memory=True)
 
-device = convertCuda.get_default_device()
+device = convert_cuda.get_default_device()
 trainloader = DeviceDataLoader(train_dl, device)
 valloader = DeviceDataLoader(valid_dl, device)
 
@@ -78,7 +79,7 @@ MODEL_ZOO = [
 for name, params, classifier in MODEL_ZOO:
 
     model = PetsModel(NUM_CLASSES, classifier, pretrained=True)
-    convertCuda.to_device(model, device)
+    convert_cuda.to_device(model, device)
 
     with mlflow.start_run(run_name=name) as run:
 
