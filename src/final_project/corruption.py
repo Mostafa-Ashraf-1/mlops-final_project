@@ -558,7 +558,7 @@ def create_manifest(test_images):
 
 def main():
     """Build the split first, then derive every corruption from held-out test."""
-    from src.final_project.dataset_split import create_dataset_split
+    from .dataset_split import create_dataset_split
 
     print("=" * 60)
     print("Oxford-IIIT Pet Corruption Suite")
