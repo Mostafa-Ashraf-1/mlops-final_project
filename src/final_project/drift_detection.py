@@ -118,7 +118,7 @@ def run_drift_report(
     threshold: float = DEFAULT_DRIFT_THRESHOLD,
 ) -> dict:
     """Compare every corruption/severity folder against corruption_test/clean."""
-    clean_dir = corruption_dir / "clean"
+    clean_dir = corruption_dir.parent / "split" / "test"
     reference = image_feature_matrix(supported_images(clean_dir))
     results = {}
 
