@@ -557,109 +557,38 @@ def create_manifest(test_images):
 # ============================================================
 
 def main():
+    """Build the split first, then derive every corruption from held-out test."""
+    from .dataset_split import create_dataset_split
 
     print("=" * 60)
     print("Oxford-IIIT Pet Corruption Suite")
     print("=" * 60)
 
-    # --------------------------------------------------------
-    # Check source
-    # --------------------------------------------------------
-
     if not IMAGES_PATH.exists():
+        raise FileNotFoundError(f"Dataset not found:\n{IMAGES_PATH}")
 
-        raise FileNotFoundError(
-            f"Dataset not found:\n{IMAGES_PATH}"
-        )
-
-    # --------------------------------------------------------
-    # Load dataset
-    # --------------------------------------------------------
-
-    print(
-        f"\nLoading images from:\n{IMAGES_PATH}"
+    train_count, test_count = create_dataset_split(
+        IMAGES_PATH,
+        SPLIT_DIR,
+        test_size=TEST_SIZE,
+        seed=RANDOM_STATE,
     )
-
-    images, labels = get_images()
-
-    print(
-        f"Total images: {len(images)}"
+    test_images = sorted(
+        path for path in TEST_DIR.iterdir()
+        if path.is_file() and path.suffix.lower() in IMAGE_EXTENSIONS
     )
+    print(f"Train + validation images: {train_count}")
+    print(f"Held-out test images: {test_count}")
 
-    print(
-        f"Total classes: {len(set(labels))}"
-    )
+    # Corruptions are generated only from split/test; original images remain intact.
+    generate_corruption_suite(test_images)
+    create_manifest(test_images)
 
-    # --------------------------------------------------------
-    # Create stratified 80/20 split
-    # --------------------------------------------------------
-
-    train_images, test_images = create_split(
-        images,
-        labels,
-    )
-
-    print(
-        f"\nTrain images: {len(train_images)} "
-        f"({len(train_images) / len(images) * 100:.2f}%)"
-    )
-
-    print(
-        f"Test images: {len(test_images)} "
-        f"({len(test_images) / len(images) * 100:.2f}%)"
-    )
-
-    # --------------------------------------------------------
-    # Copy train/test split
-    # --------------------------------------------------------
-
-    copy_split(
-        train_images,
-        test_images,
-    )
-
-    # --------------------------------------------------------
-    # Generate corruptions ONLY from test
-    # --------------------------------------------------------
-
-    generate_corruption_suite(
-        test_images
-    )
-
-    # --------------------------------------------------------
-    # Generate ground truth
-    # --------------------------------------------------------
-
-    create_manifest(
-        test_images
-    )
-
-    # --------------------------------------------------------
-    # Summary
-    # --------------------------------------------------------
-
-    print("\n" + "=" * 60)
-    print("DONE")
-    print("=" * 60)
-
-    print("\nDataset split:")
-    print(
-        f"  Train: {TRAIN_DIR}"
-    )
-    print(
-        f"  Test:  {TEST_DIR}"
-    )
-
-    print(
-        "\nCorruption suite:"
-    )
-    print(
-        f"  {CORRUPTION_DIR}"
-    )
-
-    print(
-        "\nOriginal dataset was NOT modified."
-    )
+    print("\nDONE")
+    print(f"Train + validation: {TRAIN_DIR}")
+    print(f"Clean test:          {TEST_DIR}")
+    print(f"Corruption suite:    {CORRUPTION_DIR}")
+    print("Original images/ directory was NOT modified.")
 
 
 if __name__ == "__main__":
