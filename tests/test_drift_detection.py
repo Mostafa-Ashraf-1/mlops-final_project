@@ -61,8 +61,9 @@ def test_run_drift_report_compares_each_severity_to_clean(
     tmp_path: Path,
 ) -> None:
     corruption_dir = tmp_path / "corruption_test"
-    clean_dir = corruption_dir / "clean"
+    clean_dir = tmp_path / "split" / "test"
     blur_dir = corruption_dir / "gaussian_blur" / "severity_1"
+
     clean_dir.mkdir(parents=True)
     blur_dir.mkdir(parents=True)
 
