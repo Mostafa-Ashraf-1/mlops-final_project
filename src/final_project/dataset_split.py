@@ -75,6 +75,12 @@ def build_manifest(
     from PIL import Image
 
     records = []
+    class_to_idx = {
+        breed: index
+        for index, breed in enumerate(
+            sorted({breed_from_filename(path) for path in (*train_images, *test_images)})
+        )
+    }
     for split_name, paths in (("trainval", train_images), ("test", test_images)):
         for path in paths:
             with Image.open(path) as image:
@@ -88,7 +94,7 @@ def build_manifest(
                     "path": path.relative_to(dataset_root).as_posix(),
                     "breed": breed,
                     "species": species,
-                    "class_index": None,
+                    "class_index": class_to_idx[breed],
                     "split": split_name,
                     "corruption": None,
                     "severity": 0,
