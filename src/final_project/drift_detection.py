@@ -176,7 +176,7 @@ def main() -> None:
 
     report = run_drift_report(args.corruption_dir, threshold=args.threshold)
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(report, indent=2) + "\\n", encoding="utf-8")
+    args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
 
     print(f"Compared {len(report['scenarios'])} corruption scenarios.")
     print(f"Report saved to: {args.output}")
