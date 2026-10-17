@@ -39,6 +39,7 @@ docker stop pets-api
 - **Image classification:** trains transfer-learning experiments with ResNet-18, ResNet-50, and MobileNetV3-Small using PyTorch.
 - **Experiment tracking:** records training and validation metrics in MLflow, including loss, top-1 accuracy, macro-F1, coverage, selective accuracy, and expected calibration error (ECE).
 - **Model serving:** serves the exported ONNX model through FastAPI and ONNX Runtime on CPU.
+- **Service monitoring:** exposes Prometheus metrics for HTTP request counts, request duration, prediction confidence, and confident/uncertain decisions; a provisioned Grafana dashboard visualizes these metrics.
 - **Input validation and confidence handling:** returns the predicted breed, cat/dog species, confidence, top-three predictions, model version, and a confidence-based `confident` / `uncertain` decision.
 - **Data versioning:** tracks the dataset with DVC.
 - **Data and drift tests:** creates a reproducible, stratified 80/20 train-validation pool / held-out test split; applies controlled image corruptions to the held-out test set; compares image-feature distributions to detect input drift.
@@ -74,6 +75,7 @@ FastAPI + ONNX Runtime
         |
         +--> GET /health
         +--> POST /predict
+        +--> GET /metrics --> Prometheus --> Grafana dashboard
 ```
 
 ## Repository layout
@@ -81,6 +83,10 @@ FastAPI + ONNX Runtime
 ```text
 .
 ├── .github/workflows/main.yml     # GitHub Actions tests
+├── docker-compose.monitoring.yml  # API + Prometheus + Grafana stack
+├── monitoring/
+│   ├── prometheus.yml             # API scrape configuration
+│   └── grafana/                   # Provisioned datasource and dashboard
 ├── artifacts/
 │   ├── model.onnx                 # Exported inference model
 │   ├── classes.json               # Output-index to breed mapping
@@ -167,6 +173,7 @@ Open the interactive API documentation at [http://127.0.0.1:8000/docs](http://12
 | --- | --- | --- |
 | `GET` | `/health` | Returns service status, model version, model filename, and class count. |
 | `POST` | `/predict` | Accepts an uploaded image and returns a breed prediction. |
+| `GET` | `/metrics` | Exposes Prometheus-formatted HTTP and prediction metrics (hidden from API docs). |
 
 Example health check:
 
@@ -215,6 +222,40 @@ docker run --rm -p 8000:8000 pets-api
 ```
 
 Then visit [http://localhost:8000/docs](http://localhost:8000/docs). The current Dockerfile installs production dependencies and copies `src/` and `artifacts/`; it does not pull the DVC dataset because the inference service does not need the training dataset.
+
+
+## Monitoring (Prometheus + Grafana)
+
+The monitoring stack observes the running inference API. It does not claim to measure model accuracy or detect semantic/data drift from live traffic; the existing offline corruption suite remains the project's input-drift evaluation.
+
+Start the API, Prometheus, and Grafana together from the repository root:
+
+```bash
+docker compose -f docker-compose.monitoring.yml up --build -d
+```
+
+Open the services:
+
+- **API docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Prometheus:** [http://localhost:9090](http://localhost:9090)
+- **Grafana dashboard:** [http://localhost:3000](http://localhost:3000) — local demo login: `admin` / `admin`
+
+The Grafana dashboard is provisioned automatically. It displays HTTP request rate by route, average request duration, prediction decisions (confident vs. uncertain), mean prediction confidence, HTTP 5xx rate, and the prediction-confidence distribution. Prometheus scrapes `/metrics` every five seconds.
+
+Metrics exposed by the API include:
+
+- `pets_api_http_requests_total`: request count labelled by method, route, and status code.
+- `pets_api_http_request_duration_seconds_sum` and `_count`: request duration aggregates, which can be combined in PromQL to estimate average latency.
+- `pets_api_predictions_total`: successful predictions split by the API's confidence decision.
+- `pets_api_prediction_confidence`: confidence histogram for successful predictions.
+
+Send a few requests to `/predict` to populate the dashboard; metrics start at zero after a fresh API process. To stop the stack:
+
+```bash
+docker compose -f docker-compose.monitoring.yml down
+```
+
+Prometheus and Grafana data persist in named Docker volumes. The credentials above are for a local demonstration only; change them before exposing Grafana beyond your machine. This setup monitors service behavior and prediction confidence, **not ground-truth accuracy**. Confidence is not a guarantee that a prediction is correct.
 
 ## Training and experiment tracking
 

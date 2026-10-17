@@ -25,6 +25,122 @@ CONFIDENCE_THRESHOLD = 0.80
 
 app = FastAPI(title="Pets API", version=MODEL_VERSION)
 
+# --------------------------------------------------
+# Lightweight Prometheus metrics (no extra Python dependency)
+# --------------------------------------------------
+
+import threading
+import time
+from collections import defaultdict
+
+from fastapi import Request
+from fastapi.responses import PlainTextResponse
+
+_metrics_lock = threading.Lock()
+_request_counts = defaultdict(int)
+_request_duration_sum = defaultdict(float)
+_request_duration_count = defaultdict(int)
+_prediction_decisions = defaultdict(int)
+_confidence_buckets = [0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99, 1.0]
+_confidence_bucket_counts = [0 for _ in _confidence_buckets]
+_confidence_sum = 0.0
+_confidence_count = 0
+
+
+@app.middleware("http")
+async def observe_requests(request: Request, call_next):
+    started = time.perf_counter()
+    status_code = 500
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+        return response
+    finally:
+        elapsed = time.perf_counter() - started
+        route = request.url.path
+        with _metrics_lock:
+            key = (request.method, route, status_code)
+            _request_counts[key] += 1
+            _request_duration_sum[(request.method, route)] += elapsed
+            _request_duration_count[(request.method, route)] += 1
+
+
+@app.get("/metrics", include_in_schema=False)
+def metrics():
+    """Expose service and prediction metrics in Prometheus text format."""
+    lines = [
+        "# HELP pets_api_http_requests_total Total HTTP requests handled.",
+        "# TYPE pets_api_http_requests_total counter",
+    ]
+    with _metrics_lock:
+        for (method, route, status), count in sorted(_request_counts.items()):
+            lines.append(
+                f'pets_api_http_requests_total{{method="{method}",'
+                f'path="{route}",status="{status}"}} {count}'
+            )
+
+        lines.extend([
+            "# HELP pets_api_http_request_duration_seconds_sum Total HTTP request duration in seconds.",
+            "# TYPE pets_api_http_request_duration_seconds_sum counter",
+        ])
+        for (method, route), value in sorted(_request_duration_sum.items()):
+            lines.append(
+                f'pets_api_http_request_duration_seconds_sum{{method="{method}",'
+                f'path="{route}"}} {value:.9f}'
+            )
+
+        lines.extend([
+            "# HELP pets_api_http_request_duration_seconds_count Number of timed HTTP requests.",
+            "# TYPE pets_api_http_request_duration_seconds_count counter",
+        ])
+        for (method, route), count in sorted(_request_duration_count.items()):
+            lines.append(
+                f'pets_api_http_request_duration_seconds_count{{method="{method}",'
+                f'path="{route}"}} {count}'
+            )
+
+        lines.extend([
+            "# HELP pets_api_predictions_total Successful predictions by decision.",
+            "# TYPE pets_api_predictions_total counter",
+        ])
+        for decision, count in sorted(_prediction_decisions.items()):
+            lines.append(
+                f'pets_api_predictions_total{{decision="{decision}"}} {count}'
+            )
+
+        lines.extend([
+            "# HELP pets_api_prediction_confidence Prediction confidence distribution.",
+            "# TYPE pets_api_prediction_confidence histogram",
+        ])
+        cumulative = 0
+        for bound, count in zip(_confidence_buckets, _confidence_bucket_counts):
+            cumulative += count
+            lines.append(
+                f'pets_api_prediction_confidence_bucket{{le="{bound}"}} {cumulative}'
+            )
+        lines.extend([
+            f'pets_api_prediction_confidence_bucket{{le="+Inf"}} {_confidence_count}',
+            f'pets_api_prediction_confidence_sum {_confidence_sum:.9f}',
+            f'pets_api_prediction_confidence_count {_confidence_count}',
+        ])
+
+    return PlainTextResponse(
+        "\n".join(lines) + "\n",
+        media_type="text/plain; version=0.0.4; charset=utf-8",
+    )
+
+
+def record_prediction_metrics(confidence: float, decision: str) -> None:
+    global _confidence_sum, _confidence_count
+    with _metrics_lock:
+        _prediction_decisions[decision] += 1
+        _confidence_sum += confidence
+        _confidence_count += 1
+        for index, bound in enumerate(_confidence_buckets):
+            if confidence <= bound:
+                _confidence_bucket_counts[index] += 1
+                break
+
 
 # --------------------------------------------------
 # Load model and class mapping
@@ -230,6 +346,8 @@ async def predict(file: UploadFile = File(...)):
             if confidence >= CONFIDENCE_THRESHOLD
             else "uncertain"
         )
+
+        record_prediction_metrics(confidence, decision)
 
         return PredictionResponse(
             breed=breed,
