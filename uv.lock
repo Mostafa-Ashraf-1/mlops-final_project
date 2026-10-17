@@ -1109,11 +1109,13 @@ source = { editable = "." }
 dev = [
     { name = "dvc" },
     { name = "hatchling" },
+    { name = "mcp-grafana" },
     { name = "mlflow" },
     { name = "numpy" },
     { name = "onnxruntime" },
     { name = "opencv-python" },
     { name = "pillow" },
+    { name = "prometheus-client" },
     { name = "pytest" },
     { name = "python-multipart" },
     { name = "ruff" },
@@ -1141,11 +1143,13 @@ production = [
 dev = [
     { name = "dvc", specifier = ">=3.67.1" },
     { name = "hatchling", specifier = ">=1.32.4" },
+    { name = "mcp-grafana", specifier = ">=2.0.2" },
     { name = "mlflow", specifier = ">=3.16.1" },
     { name = "numpy", specifier = ">=2.5.3" },
     { name = "onnxruntime", specifier = ">=1.30.0" },
     { name = "opencv-python", specifier = ">=5.0.0.93" },
     { name = "pillow", specifier = ">=12.3.0" },
+    { name = "prometheus-client", specifier = ">=0.26.0" },
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "python-multipart", specifier = ">=0.0.32" },
     { name = "ruff", specifier = ">=0.17.0" },
@@ -1911,6 +1915,21 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/7b/30/687ccce22f66a57fed85942450e88062773bcbf1a42914e70c7148ec71dc/matplotlib-3.11.2-cp315-cp315t-musllinux_1_2_x86_64.whl", hash = "sha256:75b6d88402770e181b5d06a67dda4129c31da7d05004d63a21c310ec78d1b83c", size = 10824960, upload-time = "2026-09-11T19:05:13.9Z" },
     { url = "https://files.pythonhosted.org/packages/d3/34/117fe35a8d05054b4b34d2d29287099927c24c3841d36e06d9fa2f20c1cf/matplotlib-3.11.2-cp315-cp315t-win_amd64.whl", hash = "sha256:a6939df7567114b6bac7f4c5e06c84a67f197c1b2f2e4b234d4eecb3bfec9482", size = 9551204, upload-time = "2026-09-11T19:05:16.48Z" },
     { url = "https://files.pythonhosted.org/packages/63/5a/9f440e7bec8b80d0af2a65d1165b2f4e718982dad785531f62255d9ff19b/matplotlib-3.11.2-cp315-cp315t-win_arm64.whl", hash = "sha256:d480038c83691532ed52ff3147db51fa902fc78cb2d8349993a1cdb684435bff", size = 9233946, upload-time = "2026-09-11T19:05:19.063Z" },
+]
+
+[[package]]
+name = "mcp-grafana"
+version = "2.0.2"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2e/af/abb70ae6577ec040c20583e79a5de3c2243d87832e75ed439a72cc5d3811/mcp_grafana-2.0.2-py3-none-macosx_10_9_x86_64.whl", hash = "sha256:b1017555e357d4ccad902d25b81e29bed4966b286bbd594fa9693c4addc593dd", size = 18004680, upload-time = "2026-10-07T20:28:03.863Z" },
+    { url = "https://files.pythonhosted.org/packages/d1/f0/3fe7a5a5ef774dfa7091782402ceda2dea427b0d80340466356b4f0a30eb/mcp_grafana-2.0.2-py3-none-macosx_11_0_arm64.whl", hash = "sha256:1fc419801eb21b62c51458c73fa6586b27ddd00bb9746f41536de6df67dc6516", size = 16631825, upload-time = "2026-10-07T20:28:07.047Z" },
+    { url = "https://files.pythonhosted.org/packages/50/9b/c7d06acfb35c1c8ec502dcf10fb7ecb69d5ae9ac58f9bb79a74883e725bc/mcp_grafana-2.0.2-py3-none-manylinux_2_17_aarch64.whl", hash = "sha256:303c9cdf31ca8b6c8cdceb1e9f81e54d6f4c8d8fbd58e813493bb7de71f572ba", size = 15778363, upload-time = "2026-10-07T20:28:10.414Z" },
+    { url = "https://files.pythonhosted.org/packages/d1/c9/59b61abc9ca62d67ae4cf48159d12b6bbd4a7cf299fad660dc6def1da0bc/mcp_grafana-2.0.2-py3-none-manylinux_2_17_x86_64.whl", hash = "sha256:1ea71e45ed5283eb9daac198bd0aeb2d8beeac452724202a25cccd9d3ed20155", size = 17589669, upload-time = "2026-10-07T20:28:14.046Z" },
+    { url = "https://files.pythonhosted.org/packages/aa/ac/d8725c87da205ddbe4b2b99f7711bce95ca2ae884d5bc14cb3b5a881baf7/mcp_grafana-2.0.2-py3-none-musllinux_1_2_aarch64.whl", hash = "sha256:012bc670b2b0cbf4a2a5392d987044cdd767544438039483fb0d210384524645", size = 15778362, upload-time = "2026-10-07T20:28:17.027Z" },
+    { url = "https://files.pythonhosted.org/packages/da/4b/188bfcd140a2d4c74cbfb8b51f8bf149185a73289e51835e1dddc5688ebf/mcp_grafana-2.0.2-py3-none-musllinux_1_2_x86_64.whl", hash = "sha256:79df9d40274a6971c4184a9f7f4a8ea6a6af87d940e67800778f566b9480b9d2", size = 17589668, upload-time = "2026-10-07T20:28:20.327Z" },
+    { url = "https://files.pythonhosted.org/packages/9b/53/8ecd2d34bea4da3f35e7357d0ede8c05050d2648049f4b566af6ada932e1/mcp_grafana-2.0.2-py3-none-win_amd64.whl", hash = "sha256:0d1c4c15d92770929788fcba9a6c45e9ff3b81a0c12f3aeb9eac7bb08541dbac", size = 17985519, upload-time = "2026-10-07T20:28:23.521Z" },
+    { url = "https://files.pythonhosted.org/packages/16/04/1735c45c9b452b6db27f4aceea891b5f30841c90bc6ecaa4fba78776d8bc/mcp_grafana-2.0.2-py3-none-win_arm64.whl", hash = "sha256:d283b1aec601094e115e31f9b1470ba0b02ef81db6524da01ffb4139041e0f15", size = 15888810, upload-time = "2026-10-07T20:28:26.862Z" },
 ]
 
 [[package]]
@@ -2807,6 +2826,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/81/74/ba08d81e668ccfe8658d7520a307e63c19862c08eb4ccb26f356c5239a7a/prettytable-3.18.0.tar.gz", hash = "sha256:439217116152244369caf3d9f1caf2f9fe29b03bd79e88d2928c8e718c95d680", size = 76373, upload-time = "2026-06-22T16:07:50.174Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/fe/be/2e6798ace5cc036f5d05d36b7b2fd85346f1a708c87060890b070d0ec607/prettytable-3.18.0-py3-none-any.whl", hash = "sha256:b3346e0e6f79180833aebaac088ae926340586cf6d7d991b9eb125b65f72313a", size = 37357, upload-time = "2026-06-22T16:07:48.595Z" },
+]
+
+[[package]]
+name = "prometheus-client"
+version = "0.26.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/52/73/f1334c29c2af4cd9dba6c7817e61b611bd0215e2eb5565c6064a4de18802/prometheus_client-0.26.0.tar.gz", hash = "sha256:04a91bcf94e2cf74a44a1a874d651a2e853ed354b6e822f3b7487751465d5c2b", size = 92910, upload-time = "2026-07-24T19:36:41.893Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/eb/a3/b69efbf4143b5b9859b977770bbbabcc2796b702fa69dc40271e45cd5a56/prometheus_client-0.26.0-py3-none-any.whl", hash = "sha256:fa93d06737aa02bacd05794768508bb97d2fbee28cb3bca04eaae92f0ca953d6", size = 64494, upload-time = "2026-07-24T19:36:40.854Z" },
 ]
 
 [[package]]
