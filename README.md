@@ -1,6 +1,38 @@
 # Pet Breed Classification — MLOps Pipeline
 
-An end-to-end MLOps project for classifying **37 cat and dog breeds** from images in the [Oxford-IIIT Pet dataset](https://www.robots.ox.ac.uk/~vgg/data/pets/). The repository includes model experimentation and tracking, a versioned dataset workflow, a CPU-friendly ONNX inference API, automated tests, and a corruption-based input-drift evaluation suite.
+An end-to-end MLOps project that classifies images into **37 cat and dog breeds** using the Oxford-IIIT Pet dataset. It combines PyTorch training and MLflow tracking, a versioned data workflow, and a FastAPI prediction service powered by an exported ONNX model running on CPU. The repository also includes automated tests and a corruption-based input-drift evaluation suite.
+
+## Get a prediction in 3 commands
+
+Requirements: Docker with the Compose plugin, and a local pet image such as `pet.jpg`.
+
+1. **Build the API image** (from the repository root):
+
+   ```bash
+   docker build -t pets-api .
+   ```
+
+2. **Start the API:**
+
+   ```bash
+   docker run --rm -d --name pets-api -p 8000:8000 pets-api
+   ```
+
+3. **Send an image to the model:**
+
+   ```bash
+   curl -X POST "http://localhost:8000/predict" -F "file=@pet.jpg"
+   ```
+
+Replace `pet.jpg` with the path to an image on your machine. A successful response contains the predicted breed and species, confidence, top-three predictions, a `confident` / `uncertain` decision, and model version. The API uses a confidence threshold of `0.80`; this is an inference service and does not train the model at startup.
+
+Check service health at [http://localhost:8000/health](http://localhost:8000/health) or open the interactive API docs at [http://localhost:8000/docs](http://localhost:8000/docs).
+
+To stop the detached container after you finish:
+
+```bash
+docker stop pets-api
+```
 
 ## What it does
 
