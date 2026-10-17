@@ -31,6 +31,6 @@ jobs:
     #     uv run ruff format --check
 
     -  name: Testing API
-       run: uv run python -m pytest -s
+       run: PYTHONPATH=src uv run python -m pytest -s
              
        
