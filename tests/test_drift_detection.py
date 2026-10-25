@@ -6,7 +6,6 @@ from PIL import Image
 from final_project.drift_detection import (
     compare_feature_distributions,
     extract_image_features,
-    image_feature_matrix,
     ks_statistic,
     run_drift_report,
 )
