@@ -1,7 +1,7 @@
 [project]
 name = "final-project"
 version = "0.1.0"
-description = "Add your description here"
+description = "Oxford-IIIT Pet Breed Classification MLOps Service"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = []
@@ -44,3 +44,7 @@ dev = [
     "torchaudio>=2.11.0",
     "torchvision>=0.29.0",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = [".", "src"]
+testpaths = ["tests"]

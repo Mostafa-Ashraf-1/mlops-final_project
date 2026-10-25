@@ -11,8 +11,8 @@ import json
 import random
 import shutil
 from collections import defaultdict
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png"}
 DEFAULT_TEST_SIZE = 0.20

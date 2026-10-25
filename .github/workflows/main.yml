@@ -1,36 +1,31 @@
+name: CI
 
 on:
   pull_request:
     branches: [main]
-
   push:
     branches: ['**']
+
 jobs:
   TEST_API:
     runs-on: ubuntu-latest
     steps:
-    -  name:  Checkout repository
-       uses:  actions/checkout@v7
-       
-    -  name:  Setup python
-       uses:  actions/setup-python@v7
-       
-       with:
-         python-version:  '3.12'
+      - name: Checkout repository
+        uses: actions/checkout@v7
 
-    -  name: Install dependencies
-       run:  |
-             sudo apt update
-             pip install --upgrade pip
-             pip install uv
-             uv sync --no-dev --no-default-groups --group production --no-install-project
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
 
-    # -  name: Checking code and format errors
-    #    run: |
-    #     uv run ruff check
-    #     uv run ruff format --check
+      - name: Install uv and dependencies
+        run: |
+          pip install --upgrade pip uv
+          uv sync --group production
 
-    -  name: Testing API
-       run: PYTHONPATH=src uv run python -m pytest -s
-             
-       
+      - name: Code quality & formatting gate (Ruff)
+        run: |
+          uv run ruff check src tests
+
+      - name: Testing API
+        run: uv run pytest -s
