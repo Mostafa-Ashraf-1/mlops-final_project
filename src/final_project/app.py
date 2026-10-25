@@ -231,7 +231,7 @@ def preprocess_image(image: Image.Image) -> np.ndarray:
     width = shape[3]
 
     if not isinstance(height, int) or not isinstance(width, int):
-        raise ValueError("The ONNX model requires fixed image dimensions.")
+        raise TypeError("The ONNX model requires fixed image dimensions.")
 
     image = image.convert("RGB")
     image = image.resize((width, height), Image.Resampling.BILINEAR)
@@ -282,7 +282,7 @@ def health():
 
 
 @app.post("/predict", response_model=PredictionResponse)
-async def predict(file: UploadFile = File(...)):
+async def predict(file: UploadFile = File(...)): # noqa: B008
     if not file.content_type or not file.content_type.startswith("image/"):
         raise HTTPException(
             status_code=415,

@@ -11,10 +11,11 @@ Run these commands from the repository root:
 ```bash
 docker build -t pets-api .
 docker run --rm -d --name pets-api -p 8000:8000 pets-api
-curl -X POST "http://localhost:8000/predict" -F "file=@pet.jpg"
-```
 
-Replace `pet.jpg` with the path to an image on your computer. The response includes the predicted breed and species, confidence, top-three predictions, a `confident` / `uncertain` decision, and model version. The confidence threshold is `0.80`; confidence is not a guarantee of correctness.
+# Download a sample pet image if not already present
+curl -s -o pet.jpg "https://raw.githubusercontent.com/pytorch/hub/master/images/dog.jpg"
+
+curl -X POST "http://localhost:8000/predict" -F "file=@pet.jpg"
 
 - API health: [http://localhost:8000/health](http://localhost:8000/health)
 - Interactive API docs: [http://localhost:8000/docs](http://localhost:8000/docs)
